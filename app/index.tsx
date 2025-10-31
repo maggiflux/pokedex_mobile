@@ -1,32 +1,36 @@
 import { useEffect, useState } from "react";
-import { Text, View } from "react-native";
+import { ScrollView, Text, View } from "react-native";
 
+interface Pokemon {
+  name: string;
+  url: string;
+}
 
 export default function Index() {
-  const [count, setCount] = useState(0);
+  const [pokemons, setPokemons] = useState<Pokemon[]>([]);
   
   useEffect(() => {
-    console.log("App mounted");
+    fetchPokemonData()
   }, []);
 
   async function fetchPokemonData() {
     try {
       const response = await fetch("https://pokeapi.co/api/v2/pokemon/?limit=20");
-      const data = await response.json();
-      console.log(data);  
-    } catch (error) {
-      
+     
+      const data = await response.json() 
+      setPokemons(data.results)
+
+    } catch (e) {
+      console.log(e)
     }
   }
   return (
-    <View
-      style={{
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-      }}
-    >
-      <Text>Pokedex</Text>
-    </View>
+    <ScrollView>
+      {pokemons.map((pokemon) => (
+        <View key={pokemon.name}>
+          <Text>{pokemon.name}</Text>
+        </View>
+      ))}
+    </ScrollView>
   );
 }
